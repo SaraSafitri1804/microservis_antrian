@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="id"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard Admin - Posyandu</title><link rel="stylesheet" href="css/style.css"></head>
+<body><nav id="nav"></nav>
+<main class="container">
+  <h1>Dashboard Admin</h1>
+  <div id="msg" class="msg hidden"></div>
+  <section class="card">
+    <div class="row">
+      <div><label for="tgl">Tanggal</label><input id="tgl" type="date"></div>
+      <div class="auto"><button id="csv" class="sec" type="button">Unduh CSV</button></div>
+    </div>
+    <h2>Ringkasan</h2>
+    <div class="tw"><table><thead><tr><th>Layanan</th><th>Menunggu</th><th>Dipanggil</th><th>Selesai</th><th>Batal</th><th>Total</th></tr></thead><tbody id="sum"></tbody></table></div>
+  </section>
+  <section class="card">
+    <h2>Laporan antrian</h2>
+    <div class="tw"><table><thead><tr><th>No</th><th>Nama</th><th>Layanan</th><th>Status</th><th>Daftar</th><th>Dipanggil</th><th>Selesai</th></tr></thead><tbody id="rep"></tbody></table></div>
+  </section>
+  <section class="card">
+    <h2>Statistik balita dan ibu hamil</h2>
+    <div id="stat" class="grid"></div>
+    <h2 class="sub">Balita menurut umur</h2>
+    <div id="umur"></div>
+    <h2 class="sub">Kunjungan 6 bulan terakhir</h2>
+    <div class="tw"><table><thead><tr><th>Bulan</th><th>Balita</th><th>Ibu hamil</th><th>Umum</th></tr></thead><tbody id="bulan"></tbody></table></div>
+  </section>
+  <section class="card">
+    <h2>Tambah akun</h2>
+    <form id="reg" novalidate>
+      <label for="rn">Nama</label><input id="rn" required>
+      <label for="re">Email</label><input id="re" type="email" required>
+      <label for="rp">Password <small>(minimal 8 karakter)</small></label><input id="rp" type="password" minlength="8" required>
+      <label for="rr">Role</label><select id="rr"><option value="petugas">Petugas</option><option value="admin">Admin</option></select>
+      <button type="submit">Tambah akun</button>
+    </form>
+  </section>
+</main>
+<script src="js/api.js"></script><script src="js/admin.js"></script>
+</body></html>

@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="id"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard Petugas - Posyandu</title><link rel="stylesheet" href="css/style.css"></head>
+<body><nav id="nav"></nav>
+<main class="container">
+  <h1>Dashboard Petugas</h1>
+  <div id="msg" class="msg hidden"></div>
+  <div id="summary" class="grid"></div>
+  <section class="card" id="listCard"><div class="row"><div><label for="fl">Layanan</label><select id="fl"><option value="">Semua</option></select></div><div><label for="fs">Status</label><select id="fs"><option value="">Semua</option><option value="menunggu">Menunggu</option><option value="dipanggil">Dipanggil</option><option value="selesai">Selesai</option><option value="batal">Batal</option></select></div></div><div class="tw"><table><thead><tr><th>No</th><th>Nama</th><th>Layanan</th><th>Status</th><th>Aksi</th></tr></thead><tbody id="rows"></tbody></table></div></section>
+</main>
+<script src="js/api.js"></script><script src="js/petugas.js"></script>
+</body></html>

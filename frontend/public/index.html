@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="id"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ambil Nomor Antrian - Posyandu</title><link rel="stylesheet" href="css/style.css"></head>
+<body><nav id="nav"></nav>
+<main class="container narrow">
+  <h1>Ambil Nomor Antrian</h1>
+  <div id="msg" class="msg hidden"></div>
+  <form id="form" class="card" novalidate>
+    <label for="layanan">Layanan</label>
+    <select id="layanan" required></select>
+    <label for="nama">Nama pasien</label>
+    <input id="nama" maxlength="100" required autocomplete="off">
+    <div id="lahirBox" class="hidden">
+      <label for="lahir">Tanggal lahir balita</label>
+      <input id="lahir" type="date">
+    </div>
+    <label for="nik">NIK <small>(opsional, 16 digit)</small></label>
+    <input id="nik" inputmode="numeric" maxlength="16" autocomplete="off">
+    <button id="btn" type="submit">Ambil Nomor</button>
+  </form>
+  <section id="ticket" class="card ticket hidden">
+    <div class="info">Nomor antrian Anda</div>
+    <div id="tNo" class="no"></div>
+    <div id="tLay"></div>
+    <p id="tStatus"></p>
+    <button id="again" class="sec" type="button">Ambil nomor lagi</button>
+  </section>
+</main>
+<script src="js/api.js"></script><script src="js/index.js"></script>
+</body></html>

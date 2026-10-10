@@ -1,4 +1,11 @@
 services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - gateway
+
   gateway:
     build: ./backend/gateway
     ports:
@@ -10,6 +17,8 @@ services:
       PASIEN_URL: http://pasien-service:8000
     depends_on:
       - auth-service
+      - antrian-service
+      - pasien-service
 
   auth-service:
     build: ./backend/auth-service
@@ -25,7 +34,30 @@ services:
     volumes:
       - auth_data:/data
 
-  # antrian-service dan pasien-service ditambahkan di tahap berikutnya
+  antrian-service:
+    build: ./backend/antrian-service
+    expose:
+      - "8000"
+    environment:
+      DATABASE_URL: sqlite:////data/antrian.db
+      PASIEN_URL: http://pasien-service:8000
+      INTERNAL_KEY: ${INTERNAL_KEY}
+    volumes:
+      - antrian_data:/data
+    depends_on:
+      - pasien-service
+
+  pasien-service:
+    build: ./backend/pasien-service
+    expose:
+      - "8000"
+    environment:
+      DATABASE_URL: sqlite:////data/pasien.db
+      INTERNAL_KEY: ${INTERNAL_KEY}
+    volumes:
+      - pasien_data:/data
 
 volumes:
   auth_data:
+  antrian_data:
+  pasien_data:

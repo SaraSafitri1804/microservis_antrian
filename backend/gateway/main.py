@@ -32,6 +32,7 @@ RULES = [
     ("GET", r"^/api/antrian/hari-ini$", None),
     ("GET", r"^/api/antrian/\d+$", None),
     ("*", r"^/api/antrian(/.*)?$", STAFF),
+    ("GET", r"^/api/pasien/statistik$", ADMIN),
     ("*", r"^/api/pasien(/.*)?$", STAFF),
 ]
 

@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="id"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Layar Antrian - Posyandu</title><link rel="stylesheet" href="css/style.css"></head>
+<body class="display">
+<div id="overlay" class="overlay"><button id="enable">Klik untuk mengaktifkan suara</button></div>
+<div class="dp">
+  <header><h1>Antrian Posyandu</h1><div id="clock" class="clock"></div></header>
+  <section class="now">
+    <div class="lbl">Sedang dipanggil</div>
+    <div id="big" class="big">-</div>
+    <div id="lay" class="lay"></div>
+  </section>
+  <div class="cols">
+    <section class="panel"><h2>Dipanggil sebelumnya</h2><div id="called" class="chips"></div></section>
+    <section class="panel"><h2>Menunggu (<span id="wc">0</span>)</h2><div id="wait" class="chips"></div></section>
+  </div>
+</div>
+<script src="js/api.js"></script><script src="js/display.js"></script>
+</body></html>

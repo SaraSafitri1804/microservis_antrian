@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="id"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Data Pasien - Posyandu</title><link rel="stylesheet" href="css/style.css"></head>
+<body><nav id="nav"></nav>
+<main class="container">
+  <h1>Data Pasien</h1>
+  <div id="msg" class="msg hidden"></div>
+  <section class="card">
+    <div class="row">
+      <div><label for="jenis">Jenis</label>
+        <select id="jenis"><option value="balita">Balita</option><option value="ibu-hamil">Ibu hamil</option></select></div>
+      <div><label for="q">Cari nama atau NIK</label><input id="q" autocomplete="off"></div>
+    </div>
+    <div class="tw"><table><thead><tr><th>Nama</th><th>Umur</th><th>NIK</th><th>Kunjungan</th></tr></thead><tbody id="rows"></tbody></table></div>
+  </section>
+</main>
+<script src="js/api.js"></script><script src="js/pasien.js"></script>
+</body></html>
