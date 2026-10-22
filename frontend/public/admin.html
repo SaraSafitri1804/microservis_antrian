@@ -1,41 +1,399 @@
-<!doctype html>
-<html lang="id"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Dashboard Admin - Posyandu</title><link rel="stylesheet" href="css/style.css"></head>
-<body><nav id="nav"></nav>
-<main class="container">
-  <h1>Dashboard Admin</h1>
-  <div id="msg" class="msg hidden"></div>
-  <section class="card">
-    <div class="row">
-      <div><label for="tgl">Tanggal</label><input id="tgl" type="date"></div>
-      <div class="auto"><button id="csv" class="sec" type="button">Unduh CSV</button></div>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Dashboard Admin - Posyandu Sehat</title>
+  <link href="https://fonts.googleapis.com" rel="preconnect"/>
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#00685f",
+            "primary-container": "#008378",
+            "on-primary": "#ffffff",
+            "on-primary-container": "#f4fffc",
+            "primary-fixed": "#89f5e7",
+            "secondary": "#006c49",
+            "secondary-container": "#6cf8bb",
+            "secondary-fixed": "#6ffbbe",
+            "on-secondary": "#ffffff",
+            "on-secondary-container": "#00714d",
+            "tertiary": "#825100",
+            "tertiary-container": "#a36700",
+            "tertiary-fixed": "#ffddb8",
+            "on-tertiary-fixed": "#2a1700",
+            "error": "#ba1a1a",
+            "error-container": "#ffdad6",
+            "on-error-container": "#93000a",
+            "surface": "#faf8ff",
+            "surface-container": "#eaedff",
+            "surface-container-low": "#f2f3ff",
+            "surface-container-lowest": "#ffffff",
+            "surface-container-high": "#e2e7ff",
+            "on-surface": "#131b2e",
+            "on-surface-variant": "#3d4947",
+            "outline": "#6d7a77",
+            "outline-variant": "#bcc9c6"
+          },
+          fontFamily: {
+            sans: ["Plus Jakarta Sans", "sans-serif"]
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="bg-surface font-sans text-on-surface">
+  <!-- Sidebar Navigation -->
+  <aside class="fixed left-0 top-0 h-full w-72 bg-surface-container-low z-50 flex flex-col pt-6 pb-6 border-r border-surface-container">
+    <div class="px-6 mb-6 flex items-center gap-3">
+      <img alt="Logo Posyandu Sehat" class="h-8 w-auto object-contain" src="assets/logo.png" onerror="this.src='assets/logo.png'"/>
+      <div class="flex flex-col">
+        <span class="text-base font-bold text-primary leading-none">Posyandu Sehat</span>
+        <span class="text-[11px] text-primary font-bold mt-1">Portal Administrator</span>
+      </div>
     </div>
-    <h2>Ringkasan</h2>
-    <div class="tw"><table><thead><tr><th>Layanan</th><th>Menunggu</th><th>Dipanggil</th><th>Selesai</th><th>Batal</th><th>Total</th></tr></thead><tbody id="sum"></tbody></table></div>
-  </section>
-  <section class="card">
-    <h2>Laporan antrian</h2>
-    <div class="tw"><table><thead><tr><th>No</th><th>Nama</th><th>Layanan</th><th>Status</th><th>Daftar</th><th>Dipanggil</th><th>Selesai</th></tr></thead><tbody id="rep"></tbody></table></div>
-  </section>
-  <section class="card">
-    <h2>Statistik balita dan ibu hamil</h2>
-    <div id="stat" class="grid"></div>
-    <h2 class="sub">Balita menurut umur</h2>
-    <div id="umur"></div>
-    <h2 class="sub">Kunjungan 6 bulan terakhir</h2>
-    <div class="tw"><table><thead><tr><th>Bulan</th><th>Balita</th><th>Ibu hamil</th><th>Umum</th></tr></thead><tbody id="bulan"></tbody></table></div>
-  </section>
-  <section class="card">
-    <h2>Tambah akun</h2>
-    <form id="reg" novalidate>
-      <label for="rn">Nama</label><input id="rn" required>
-      <label for="re">Email</label><input id="re" type="email" required>
-      <label for="rp">Password <small>(minimal 8 karakter)</small></label><input id="rp" type="password" minlength="8" required>
-      <label for="rr">Role</label><select id="rr"><option value="petugas">Petugas</option><option value="admin">Admin</option></select>
-      <button type="submit">Tambah akun</button>
-    </form>
-  </section>
-</main>
-<script src="js/api.js"></script><script src="js/admin.js"></script>
-</body></html>
+    <nav class="flex-1 px-4 flex flex-col gap-1.5" id="adminSidebarNav">
+      <div class="px-3 py-1 text-[11px] text-outline uppercase tracking-wider font-bold">Modul Administrator</div>
+      <a aria-current="page" class="nav-admin-item flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all bg-primary-container text-on-primary-container shadow-xs cursor-pointer" data-target="rekap-section" href="#rekap-section">
+        <span class="material-symbols-outlined text-[20px]">analytics</span>
+        <span>Laporan &amp; Rekapitulasi</span>
+      </a>
+      <a class="nav-admin-item flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all cursor-pointer" data-target="statistik-section" href="#statistik-section">
+        <span class="material-symbols-outlined text-[20px]">monitoring</span>
+        <span>Statistik Gizi &amp; Usia</span>
+      </a>
+      <a class="nav-admin-item flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all cursor-pointer" data-path="data-pasien" href="pasien.html">
+        <span class="material-symbols-outlined text-[20px]">groups</span>
+        <span>Master Data Pasien</span>
+      </a>
+      <a class="nav-admin-item flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all cursor-pointer" data-target="akun-section" href="#akun-section">
+        <span class="material-symbols-outlined text-[20px]">manage_accounts</span>
+        <span>Manajemen Akun Staf</span>
+      </a>
+
+      <div class="px-3 pt-5 pb-1 text-[11px] text-outline uppercase tracking-wider font-bold">Pintasan Layanan</div>
+      <a class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" target="_blank" href="display.html">
+        <span class="material-symbols-outlined text-[20px] text-outline">tv</span>
+        <span>Buka Layar TV Antrian</span>
+        <span class="material-symbols-outlined text-[16px] text-outline ml-auto">open_in_new</span>
+      </a>
+      <a class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" target="_blank" href="index.html">
+        <span class="material-symbols-outlined text-[20px] text-outline">confirmation_number</span>
+        <span>Buka Kios Tiket</span>
+        <span class="material-symbols-outlined text-[16px] text-outline ml-auto">open_in_new</span>
+      </a>
+    </nav>
+    <div class="px-4">
+      <div class="bg-surface-container-lowest p-3.5 rounded-2xl flex items-center justify-between shadow-xs border border-outline-variant/20">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-full bg-primary flex items-center justify-center text-white font-bold">
+            <span class="material-symbols-outlined text-[20px]">admin_panel_settings</span>
+          </div>
+          <div class="flex flex-col">
+            <span class="text-xs font-bold text-on-surface user-display-name">Administrator</span>
+            <span class="text-[11px] text-secondary font-medium">Super User</span>
+          </div>
+        </div>
+        <button class="text-on-surface-variant hover:text-error transition-colors p-1.5 rounded-lg btn-logout" data-action="logout" title="Keluar">
+          <span class="material-symbols-outlined text-[20px]">logout</span>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content Layout -->
+  <div class="pl-72">
+    <!-- Top Bar -->
+    <header class="fixed top-0 left-72 right-0 h-16 bg-surface/90 backdrop-blur-xl shadow-xs border-b border-surface-container z-40 flex items-center justify-between px-8">
+      <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined text-primary text-[22px]">local_hospital</span>
+        <span class="text-sm font-bold text-on-surface">Posyandu Desa Sukamaju • Pusat Kontrol &amp; Laporan</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="hidden md:flex items-center gap-2 bg-surface-container px-3.5 py-1.5 rounded-full">
+          <span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+          <span class="text-xs font-medium text-on-surface-variant">Sistem Sinkron Realtime</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="relative pt-16 bg-surface min-h-screen">
+      <div class="px-6 lg:px-10 py-6 max-w-[1400px] w-full mx-auto space-y-6">
+        <!-- Flash Notification #msg -->
+        <div class="hidden transition-all duration-300 rounded-2xl p-4 flex items-center justify-between shadow-sm bg-error-container text-on-error-container" id="msg">
+          <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-[24px]">info</span>
+            <span class="text-xs font-medium" id="msg-text">Pemberitahuan sistem.</span>
+          </div>
+          <button class="p-1 rounded-lg hover:bg-black/5 transition-colors" onclick="hideMsg()">
+            <span class="material-symbols-outlined text-[18px]">close</span>
+          </button>
+        </div>
+
+        <!-- Top Action Bar & Date Filter -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-surface-container-lowest p-6 rounded-2xl shadow-sm border border-outline-variant/20 scroll-mt-20" id="rekap-section">
+          <div class="flex flex-col">
+            <span class="text-xs font-bold text-primary uppercase tracking-wider">Pusat Laporan &amp; Analitik</span>
+            <h1 class="text-xl sm:text-2xl font-extrabold text-on-surface">Ringkasan Operasional &amp; Antrian</h1>
+            <p class="text-xs text-outline">Monitoring data real-time transaksi antrian, indikator nutrisi, dan manajemen akun staf.</p>
+          </div>
+          <div class="flex flex-wrap items-center gap-3">
+            <div class="flex items-center gap-2 bg-surface-container-low px-4 py-2 rounded-xl border border-outline-variant/20">
+              <span class="material-symbols-outlined text-primary text-[20px]">calendar_today</span>
+              <label class="sr-only" for="tgl">Pilih Tanggal</label>
+              <input class="bg-transparent text-xs font-bold text-on-surface outline-none cursor-pointer" id="tgl" type="date"/>
+            </div>
+            <button class="inline-flex items-center gap-2 bg-primary hover:bg-primary-container text-on-primary px-5 py-2.5 rounded-xl text-xs font-bold shadow-sm transition-all cursor-pointer" id="csv" type="button">
+              <span class="material-symbols-outlined text-[18px]">download</span>
+              <span>Unduh Laporan CSV</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Section 1: Ringkasan Layanan & Antrian Hari Ini (#tw, #sum) -->
+        <div class="bg-surface-container-lowest p-6 rounded-2xl shadow-sm space-y-4 border border-outline-variant/20" id="tw">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-surface-container">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-surface-container flex items-center justify-center text-primary">
+                <span class="material-symbols-outlined text-[24px]">view_timeline</span>
+              </div>
+              <div>
+                <h2 class="text-base font-bold text-on-surface">Ringkasan Antrian per Layanan</h2>
+                <p class="text-xs text-outline">Data kumulatif pergerakan antrian loket &amp; pos pemeriksaan aktif</p>
+              </div>
+            </div>
+            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary-container/30 text-on-secondary-container text-xs font-bold">
+              <span class="w-2 h-2 rounded-full bg-secondary"></span>
+              Auto-update Realtime
+            </div>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr class="bg-surface-container-low text-outline uppercase tracking-wider font-semibold border-b border-surface-container">
+                  <th class="py-3 px-4 rounded-l-xl">Layanan</th>
+                  <th class="py-3 px-4 text-center">Menunggu</th>
+                  <th class="py-3 px-4 text-center">Dipanggil</th>
+                  <th class="py-3 px-4 text-center">Selesai</th>
+                  <th class="py-3 px-4 text-center">Batal</th>
+                  <th class="py-3 px-4 text-right rounded-r-xl">Total Kunjungan</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-surface-container" id="sum">
+                <tr>
+                  <td colspan="6" class="text-center py-6 text-outline">Memuat ringkasan layanan...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Section 2: Key Demographic Metrics (#statCards) -->
+        <div class="space-y-4 pt-4 scroll-mt-20" id="statistik-section">
+          <div class="flex items-center justify-between">
+            <div>
+              <h2 class="text-lg font-bold text-on-surface">Statistik Populasi &amp; Tumbuh Kembang</h2>
+              <p class="text-xs text-outline">Hasil evaluasi indikator kesehatan &amp; kunjungan terpadu</p>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="statCards">
+            <div class="p-6 text-xs text-outline">Memuat indikator kesehatan...</div>
+          </div>
+        </div>
+
+        <!-- Section 3: Grafik Distribusi Umur & Histori Kunjungan -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <!-- Grafik Distribusi Umur Balita #umur -->
+          <div class="lg:col-span-6 bg-surface-container-lowest p-6 rounded-2xl shadow-sm flex flex-col justify-between space-y-4 border border-outline-variant/20" id="umur">
+            <div>
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="w-9 h-9 rounded-xl bg-surface-container flex items-center justify-center text-primary">
+                    <span class="material-symbols-outlined text-[20px]">bar_chart</span>
+                  </div>
+                  <h3 class="text-sm font-bold text-on-surface">Distribusi Umur Balita</h3>
+                </div>
+                <span class="text-[11px] text-on-surface-variant bg-surface-container-low px-2.5 py-1 rounded-md font-semibold">Berdasarkan Tanggal Lahir</span>
+              </div>
+              <p class="text-xs text-outline mt-1">Segmentasi kohort balita untuk penyesuaian jadwal vaksin, KMS &amp; PMT</p>
+            </div>
+            <!-- Progress bars container #umurBars -->
+            <div class="space-y-4 py-2" id="umurBars">
+              <div class="text-xs text-outline italic">Memuat distribusi umur...</div>
+            </div>
+            <div class="bg-surface-container-low p-3.5 rounded-xl flex items-center gap-2.5 text-on-surface-variant text-xs">
+              <span class="material-symbols-outlined text-primary text-[20px]">info</span>
+              <span>Data grafik sinkron otomatis dengan rekam medis pasien di Posyandu.</span>
+            </div>
+          </div>
+
+          <!-- Histori Kunjungan 6 Bulan Terakhir #bulan -->
+          <div class="lg:col-span-6 bg-surface-container-lowest p-6 rounded-2xl shadow-sm flex flex-col justify-between space-y-4 border border-outline-variant/20">
+            <div>
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="w-9 h-9 rounded-xl bg-surface-container flex items-center justify-center text-primary">
+                    <span class="material-symbols-outlined text-[20px]">history</span>
+                  </div>
+                  <h3 class="text-sm font-bold text-on-surface">Histori Kunjungan Semester</h3>
+                </div>
+                <span class="text-[11px] text-secondary bg-secondary-container/20 px-2.5 py-1 rounded-md font-bold">Tren Kunjungan</span>
+              </div>
+              <p class="text-xs text-outline mt-1">Rekapitulasi partisipasi masyarakat 6 bulan ke belakang</p>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr class="bg-surface-container-low text-outline uppercase tracking-wider font-semibold border-b border-surface-container">
+                    <th class="py-2.5 px-4 rounded-l-xl">Bulan</th>
+                    <th class="py-2.5 px-4">Balita</th>
+                    <th class="py-2.5 px-4">Ibu Hamil</th>
+                    <th class="py-2.5 px-4 rounded-r-xl">Umum</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-surface-container" id="bulan">
+                  <tr>
+                    <td colspan="4" class="text-center py-6 text-outline">Memuat histori kunjungan...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="flex items-center justify-between text-outline text-[11px] pt-1">
+              <span>Kehadiran Terjaga</span>
+              <span class="text-secondary font-semibold">Tercatat di Sistem</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 4: Tabel Laporan Antrian Rinci (#rep) -->
+        <div class="bg-surface-container-lowest p-6 rounded-2xl shadow-sm space-y-4 border border-outline-variant/20">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-surface-container">
+            <div>
+              <h2 class="text-base font-bold text-on-surface">Laporan Antrian Rinci</h2>
+              <p class="text-xs text-outline">Log audit pergerakan seluruh nomor antrian pasien secara mendetail</p>
+            </div>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border-collapse min-w-[700px]">
+              <thead>
+                <tr class="bg-surface-container-low text-outline uppercase tracking-wider font-semibold border-b border-surface-container">
+                  <th class="py-3 px-4 rounded-l-xl">No Antrian</th>
+                  <th class="py-3 px-4">Nama Pasien</th>
+                  <th class="py-3 px-4">Layanan</th>
+                  <th class="py-3 px-4 text-center">Status</th>
+                  <th class="py-3 px-4">Daftar</th>
+                  <th class="py-3 px-4">Dipanggil</th>
+                  <th class="py-3 px-4 rounded-r-xl">Selesai</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-surface-container" id="rep">
+                <tr>
+                  <td colspan="7" class="text-center py-8 text-outline">Memuat data transaksi antrian...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Section 5: Tambah Akun Petugas & Kader (#reg) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start pt-4" id="akun-section">
+          <div class="lg:col-span-7 bg-surface-container-lowest p-6 rounded-2xl shadow-sm space-y-4 border border-outline-variant/20">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                <span class="material-symbols-outlined text-[22px]">person_add</span>
+              </div>
+              <div>
+                <h2 class="text-base font-bold text-on-surface">Registrasi Akun Petugas / Kader</h2>
+                <p class="text-xs text-outline">Buat akses resmi staf untuk login ke dashboard operasional</p>
+              </div>
+            </div>
+            <form class="space-y-4" id="reg" novalidate="">
+              <!-- Nama #rn -->
+              <div class="space-y-1">
+                <label class="text-xs font-bold text-on-surface" for="rn">Nama Lengkap &amp; Gelar</label>
+                <div class="relative">
+                  <span class="material-symbols-outlined absolute left-3 top-2.5 text-[20px] text-outline">badge</span>
+                  <input autocomplete="off" class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-surface-container-low text-xs text-on-surface outline-none focus:ring-2 focus:ring-primary border border-outline-variant/20" id="rn" placeholder="misal: Bd. Nurul Hidayah, S.Tr.Keb" required="" type="text"/>
+                </div>
+              </div>
+              <!-- Email #re -->
+              <div class="space-y-1">
+                <label class="text-xs font-bold text-on-surface" for="re">Alamat Email Dinas</label>
+                <div class="relative">
+                  <span class="material-symbols-outlined absolute left-3 top-2.5 text-[20px] text-outline">mail</span>
+                  <input autocomplete="off" class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-surface-container-low text-xs text-on-surface outline-none focus:ring-2 focus:ring-primary border border-outline-variant/20" id="re" placeholder="petugas@posyandu.com" required="" type="email"/>
+                </div>
+              </div>
+              <!-- Password #rp & Role #rr -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="space-y-1">
+                  <label class="text-xs font-bold text-on-surface" for="rp">Kata Sandi (min 8 karakter)</label>
+                  <div class="relative">
+                    <span class="material-symbols-outlined absolute left-3 top-2.5 text-[20px] text-outline">lock</span>
+                    <input class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-surface-container-low text-xs text-on-surface outline-none focus:ring-2 focus:ring-primary border border-outline-variant/20" id="rp" minlength="8" placeholder="Minimal 8 karakter" required="" type="password"/>
+                  </div>
+                </div>
+                <div class="space-y-1">
+                  <label class="text-xs font-bold text-on-surface" for="rr">Peran Otoritas (Role)</label>
+                  <div class="relative">
+                    <span class="material-symbols-outlined absolute left-3 top-2.5 text-[20px] text-outline">admin_panel_settings</span>
+                    <select class="w-full pl-10 pr-8 py-2.5 rounded-xl bg-surface-container-low text-xs font-bold text-on-surface outline-none focus:ring-2 focus:ring-primary border border-outline-variant/20 appearance-none cursor-pointer" id="rr" required="">
+                      <option value="petugas">Petugas / Kader Kesehatan</option>
+                      <option value="admin">Administrator Posyandu</option>
+                    </select>
+                    <span class="material-symbols-outlined absolute right-3 top-2.5 text-[20px] text-outline pointer-events-none">expand_more</span>
+                  </div>
+                </div>
+              </div>
+              <div class="pt-2 flex items-center justify-end gap-3">
+                <button class="px-4 py-2.5 rounded-xl text-on-surface-variant hover:bg-surface-container-low text-xs font-bold transition-colors cursor-pointer" type="reset">
+                  Reset
+                </button>
+                <button class="inline-flex items-center gap-2 bg-primary hover:bg-primary-container text-on-primary px-5 py-2.5 rounded-xl text-xs font-bold shadow-sm transition-all cursor-pointer" type="submit">
+                  <span class="material-symbols-outlined text-[18px]">how_to_reg</span>
+                  <span>Tambah Akun Baru</span>
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Active Staff Info -->
+          <div class="lg:col-span-5 bg-surface-container-lowest p-6 rounded-2xl shadow-sm space-y-4 border border-outline-variant/20">
+            <div class="flex items-center justify-between">
+              <h3 class="text-sm font-bold text-on-surface">Hak Akses &amp; Keamanan</h3>
+              <span class="text-[11px] text-secondary bg-secondary-container/20 px-2.5 py-0.5 rounded-full font-bold">Role-Based</span>
+            </div>
+            <div class="space-y-2.5 text-xs text-on-surface-variant leading-relaxed">
+              <div class="p-3 rounded-xl bg-surface-container-low/70 flex items-start gap-2.5">
+                <span class="material-symbols-outlined text-primary text-[18px] shrink-0 mt-0.5">verified_user</span>
+                <div>
+                  <strong class="text-on-surface block">Petugas:</strong>
+                  Dapat mengelola antrian harian, memanggil pasien, menandai selesai/batal, dan melihat direktori balita &amp; ibu hamil.
+                </div>
+              </div>
+              <div class="p-3 rounded-xl bg-surface-container-low/70 flex items-start gap-2.5">
+                <span class="material-symbols-outlined text-primary text-[18px] shrink-0 mt-0.5">admin_panel_settings</span>
+                <div>
+                  <strong class="text-on-surface block">Administrator:</strong>
+                  Memiliki semua izin petugas, ditambah hak mengakses statistik agregat, mengunduh laporan audit CSV, dan mendaftarkan akun baru.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

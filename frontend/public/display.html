@@ -1,20 +1,310 @@
-<!doctype html>
-<html lang="id"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Layar Antrian - Posyandu</title><link rel="stylesheet" href="css/style.css"></head>
-<body class="display">
-<div id="overlay" class="overlay"><button id="enable">Klik untuk mengaktifkan suara</button></div>
-<div class="dp">
-  <header><h1>Antrian Posyandu</h1><div id="clock" class="clock"></div></header>
-  <section class="now">
-    <div class="lbl">Sedang dipanggil</div>
-    <div id="big" class="big">-</div>
-    <div id="lay" class="lay"></div>
-  </section>
-  <div class="cols">
-    <section class="panel"><h2>Dipanggil sebelumnya</h2><div id="called" class="chips"></div></section>
-    <section class="panel"><h2>Menunggu (<span id="wc">0</span>)</h2><div id="wait" class="chips"></div></section>
-  </div>
-</div>
-<script src="js/api.js"></script><script src="js/display.js"></script>
-</body></html>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Layar Antrian TV - Posyandu Sehat</title>
+  <link href="https://fonts.googleapis.com" rel="preconnect"/>
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#00685f",
+            "primary-container": "#008378",
+            "on-primary": "#ffffff",
+            "on-primary-container": "#f4fffc",
+            "primary-fixed": "#89f5e7",
+            "secondary": "#006c49",
+            "secondary-container": "#6cf8bb",
+            "secondary-fixed": "#6ffbbe",
+            "on-secondary": "#ffffff",
+            "on-secondary-container": "#00714d",
+            "tertiary": "#825100",
+            "tertiary-container": "#a36700",
+            "tertiary-fixed": "#ffddb8",
+            "on-tertiary-fixed-variant": "#653e00",
+            "error": "#ba1a1a",
+            "error-container": "#ffdad6",
+            "on-error-container": "#93000a",
+            "surface": "#faf8ff",
+            "surface-container": "#eaedff",
+            "surface-container-low": "#f2f3ff",
+            "surface-container-lowest": "#ffffff",
+            "surface-container-high": "#e2e7ff",
+            "on-surface": "#131b2e",
+            "on-surface-variant": "#3d4947",
+            "outline": "#6d7a77",
+            "outline-variant": "#bcc9c6"
+          },
+          fontFamily: {
+            sans: ["Plus Jakarta Sans", "sans-serif"]
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="bg-surface font-sans text-on-surface select-none">
+  <!-- Top Navigation Header -->
+  <header class="fixed top-0 w-full z-40 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] border-b border-surface-container">
+    <div class="h-16 w-full px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
+      <a href="index.html" class="flex items-center gap-3">
+        <img alt="Logo Posyandu Sehat" class="h-8 w-auto object-contain" src="assets/logo.png" onerror="this.src='assets/logo.png'"/>
+        <div class="flex flex-col">
+          <span class="text-base font-bold text-primary leading-tight tracking-tight">Posyandu Sehat</span>
+          <span class="text-[11px] text-outline hidden sm:block">Sistem Antrian &amp; Layanan Terpadu</span>
+        </div>
+      </a>
+      <nav class="hidden sm:flex items-center gap-2">
+        <a class="px-4 py-2 text-sm font-semibold text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface rounded-xl transition-colors" data-path="ambil-antrian" href="index.html">Ambil Antrian</a>
+        <a aria-current="page" class="px-4 py-2 transition-colors bg-primary-container text-on-primary-container text-sm font-semibold rounded-xl shadow-xs" data-path="layar-antrian" href="display.html">Layar Antrian</a>
+      </nav>
+      <div class="flex items-center gap-3" id="navAuthArea">
+        <a href="login.html" class="px-3.5 py-1.5 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface text-xs font-semibold flex items-center gap-1.5 transition-colors border border-outline-variant/30">
+          <span class="material-symbols-outlined text-[18px] text-primary">lock</span>
+          <span>Login Petugas</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="w-full pt-16 bg-surface min-h-[calc(100vh-4rem)]">
+    <div class="flex flex-col w-full relative overflow-hidden pb-12">
+      <!-- Audio Permission Modal / Overlay -->
+      <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md transition-opacity duration-300" id="overlay">
+        <div class="bg-surface-container-lowest p-8 rounded-2xl shadow-2xl max-w-md w-full mx-4 text-center flex flex-col items-center border border-outline-variant/30">
+          <div class="w-16 h-16 rounded-full bg-primary-container/20 flex items-center justify-center text-primary mb-5 shadow-sm">
+            <span class="material-symbols-outlined text-[36px]">volume_up</span>
+          </div>
+          <h2 class="text-xl font-bold text-on-surface mb-2">Aktifkan Suara Panggilan</h2>
+          <p class="text-sm text-on-surface-variant mb-6 leading-relaxed">
+            Layar TV memerlukan izin audio browser untuk memutar bel dan panggilan suara antrian balita serta ibu hamil.
+          </p>
+          <button class="w-full py-3.5 px-6 bg-primary hover:bg-primary-container text-on-primary font-bold text-sm rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer" id="enable">
+            <span class="material-symbols-outlined text-[20px]">notifications_active</span>
+            <span>Buka Layar Monitor &amp; Aktifkan Audio</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- TV Sub-Header Banner (Info Clinic & Live Clock) -->
+      <div class="w-full bg-surface-container-low px-4 sm:px-8 py-3.5 shadow-sm mb-6 border-b border-surface-container">
+        <div class="max-w-[1600px] mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center text-on-primary shadow-sm">
+              <span class="material-symbols-outlined text-[28px]">tv</span>
+            </div>
+            <div class="flex flex-col">
+              <div class="flex items-center gap-2">
+                <span class="text-[10px] bg-secondary-container text-on-secondary-container px-2.5 py-0.5 rounded-full uppercase tracking-wider font-bold">Live Monitor</span>
+                <span class="text-xs text-outline">Posyandu Desa Sukamaju RW 04</span>
+              </div>
+              <span class="text-lg font-bold text-on-surface tracking-tight">Display Antrian Layanan Balita &amp; Ibu Hamil</span>
+            </div>
+          </div>
+          <!-- Clock & Date Widget -->
+          <div class="flex items-center gap-6 bg-surface-container-lowest px-5 py-2 rounded-2xl shadow-sm border border-outline-variant/20">
+            <div class="flex flex-col text-right">
+              <span class="text-xs text-outline font-medium" id="currentDate">Rabu, 14 Oktober 2026</span>
+              <span class="text-[11px] text-secondary font-bold">Layanan s/d 12:00 WIB</span>
+            </div>
+            <div class="h-8 w-px bg-surface-container"></div>
+            <div class="flex items-center gap-1.5 text-primary">
+              <span class="material-symbols-outlined text-[24px]">schedule</span>
+              <span class="text-2xl lg:text-3xl font-extrabold tracking-tight tabular-nums" id="clock">--:--:-- WIB</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Content Grid -->
+      <div class="max-w-[1600px] w-full mx-auto px-4 sm:px-8 flex flex-col gap-6 flex-1">
+        <!-- Top Split: Big Hero "Now Calling" + Side Panels -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+          <!-- Primary Display: Sedang Dipanggil (#now) -->
+          <div class="lg:col-span-7 xl:col-span-8 flex flex-col">
+            <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary via-primary-container to-primary text-on-primary p-6 lg:p-10 shadow-xl flex-1 flex flex-col justify-between min-h-[460px]" id="now">
+              <!-- Ambient Glow Effect -->
+              <div class="absolute -top-24 -right-24 w-80 h-80 rounded-full bg-secondary-fixed/20 blur-3xl pointer-events-none animate-pulse"></div>
+              <div class="absolute -bottom-24 -left-24 w-72 h-72 rounded-full bg-primary-fixed/25 blur-3xl pointer-events-none"></div>
+
+              <!-- Top Status Tag -->
+              <div class="relative z-10 flex flex-wrap items-center justify-between gap-3">
+                <div class="inline-flex items-center gap-2 bg-white/15 backdrop-blur-md px-4 py-1.5 rounded-full">
+                  <span class="w-3 h-3 rounded-full bg-secondary-container animate-ping"></span>
+                  <span class="text-xs tracking-wider uppercase font-bold text-on-primary" id="lbl">
+                    SEDANG DIPANGGIL DI RUANG PELAYANAN
+                  </span>
+                </div>
+                <div class="flex items-center gap-1.5 bg-white/10 px-3 py-1 rounded-lg text-xs">
+                  <span class="material-symbols-outlined text-[18px]">mic</span>
+                  <span class="uppercase tracking-wider font-semibold">Suara Aktif</span>
+                </div>
+              </div>
+
+              <!-- Gigantic Ticket Number -->
+              <div class="relative z-10 my-auto py-4 flex flex-col items-center justify-center text-center">
+                <span class="text-xs uppercase tracking-widest text-primary-fixed mb-1 font-bold">Nomor Urut Antrian</span>
+                <div class="text-[96px] sm:text-[130px] lg:text-[160px] leading-none font-extrabold tracking-tight text-white drop-shadow-md select-text" id="big">
+                  -
+                </div>
+                <div class="inline-flex items-center gap-2 mt-2 bg-white/20 px-4 py-1.5 rounded-full text-white text-xs font-semibold">
+                  <span class="material-symbols-outlined text-[18px]">meeting_room</span>
+                  <span>Meja Pelayanan • Balai Posyandu</span>
+                </div>
+              </div>
+
+              <!-- Service Ribbon -->
+              <div class="relative z-10 bg-surface-container-lowest/15 backdrop-blur-md rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-inner">
+                <div class="flex items-center gap-3 w-full sm:w-auto">
+                  <div class="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+                    <span class="material-symbols-outlined text-white text-[24px]">medical_services</span>
+                  </div>
+                  <div class="flex flex-col text-left">
+                    <span class="text-[11px] uppercase tracking-wide text-primary-fixed font-semibold">Tindakan / Layanan</span>
+                    <span class="text-lg font-bold text-white tracking-normal" id="lay">
+                      Menunggu antrian berikutnya...
+                    </span>
+                  </div>
+                </div>
+                <button class="shrink-0 px-4 py-2.5 bg-surface-container-lowest text-primary hover:bg-surface-container text-xs font-bold rounded-xl transition-colors flex items-center gap-1.5 shadow-sm cursor-pointer" onclick="triggerVoiceCall()">
+                  <span class="material-symbols-outlined text-[18px]">volume_up</span>
+                  <span>Panggil Ulang Suara</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: Live Station Status & Program -->
+          <div class="lg:col-span-5 xl:col-span-4 flex flex-col gap-4">
+            <!-- Status Posyandu Station -->
+            <div class="bg-surface-container-lowest p-5 rounded-2xl shadow-sm flex flex-col gap-3 border border-outline-variant/20">
+              <div class="flex items-center justify-between pb-1">
+                <span class="text-xs text-on-surface font-bold flex items-center gap-2">
+                  <span class="material-symbols-outlined text-primary text-[20px]">health_and_safety</span>
+                  Status Meja Pelayanan
+                </span>
+                <span class="text-[10px] text-secondary font-bold flex items-center gap-1">
+                  <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                  Realtime Sync
+                </span>
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <div class="bg-surface-container-low p-3 rounded-xl flex flex-col justify-between">
+                  <span class="text-[11px] text-on-surface-variant font-medium">Meja 1 (Pendaftaran)</span>
+                  <div class="flex items-baseline justify-between mt-2">
+                    <span class="text-sm font-bold text-primary">Aktif</span>
+                    <span class="text-[10px] text-secondary font-bold">Pelayanan</span>
+                  </div>
+                </div>
+                <div class="bg-surface-container-low p-3 rounded-xl flex flex-col justify-between">
+                  <span class="text-[11px] text-on-surface-variant font-medium">Meja 2 (Penimbangan)</span>
+                  <div class="flex items-baseline justify-between mt-2">
+                    <span class="text-sm font-bold text-primary">KMS</span>
+                    <span class="text-[10px] text-secondary font-bold">Aktif</span>
+                  </div>
+                </div>
+                <div class="bg-surface-container-low p-3 rounded-xl flex flex-col justify-between">
+                  <span class="text-[11px] text-on-surface-variant font-medium">Meja 3 (Imunisasi &amp; ANC)</span>
+                  <div class="flex items-baseline justify-between mt-2">
+                    <span class="text-sm font-bold text-primary">Bidan</span>
+                    <span class="text-[10px] text-tertiary font-bold">Siaga</span>
+                  </div>
+                </div>
+                <div class="bg-surface-container-low p-3 rounded-xl flex flex-col justify-between">
+                  <span class="text-[11px] text-on-surface-variant font-medium">Meja 4 (Konseling &amp; PMT)</span>
+                  <div class="flex items-baseline justify-between mt-2">
+                    <span class="text-sm font-bold text-primary">Gizi</span>
+                    <span class="text-[10px] text-secondary font-bold">Tersedia</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Posyandu Daily Metrics -->
+            <div class="bg-surface-container-lowest p-5 rounded-2xl shadow-sm flex items-center justify-around text-center border border-outline-variant/20">
+              <div>
+                <span class="text-3xl font-extrabold text-primary" id="statTotal">-</span>
+                <p class="text-[11px] text-outline mt-0.5">Total Pasien</p>
+              </div>
+              <div class="w-px h-8 bg-surface-container"></div>
+              <div>
+                <span class="text-3xl font-extrabold text-secondary" id="statSisa">-</span>
+                <p class="text-[11px] text-outline mt-0.5">Sisa Menunggu</p>
+              </div>
+              <div class="w-px h-8 bg-surface-container"></div>
+              <div>
+                <span class="text-3xl font-extrabold text-tertiary">4</span>
+                <p class="text-[11px] text-outline mt-0.5">Kader Siaga</p>
+              </div>
+            </div>
+
+            <!-- Health Announcement Card -->
+            <div class="bg-gradient-to-br from-surface-container to-surface-container-low p-4 rounded-2xl shadow-sm flex items-center gap-3 border border-outline-variant/20">
+              <div class="w-12 h-12 rounded-xl bg-tertiary-container text-on-tertiary-container flex items-center justify-center shrink-0 shadow-sm">
+                <span class="material-symbols-outlined text-[26px]">vaccines</span>
+              </div>
+              <div class="flex flex-col">
+                <span class="text-[10px] uppercase font-bold text-tertiary">Program Bulan Ini</span>
+                <span class="text-xs font-bold text-on-surface">Pemberian Vitamin A &amp; Vaksin Polio</span>
+                <span class="text-[11px] text-on-surface-variant">Serahkan buku KIA/KMS ke meja 1 saat nomor dipanggil.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom Lists Split: Dipanggil Sebelumnya (#called) vs Antrian Menunggu (#wait) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <!-- Dipanggil Sebelumnya (#called) -->
+          <div class="lg:col-span-5 flex flex-col">
+            <div class="bg-surface-container-lowest rounded-2xl p-5 shadow-sm h-full flex flex-col border border-outline-variant/20">
+              <div class="flex items-center justify-between mb-4 pb-2 border-b border-surface-container">
+                <div class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-outline text-[20px]">history</span>
+                  <h3 class="text-sm font-bold text-on-surface">Dipanggil Sebelumnya</h3>
+                </div>
+                <span class="text-[10px] bg-surface-container-high px-2.5 py-0.5 rounded-full text-on-surface-variant font-semibold">Terkini</span>
+              </div>
+              <div class="flex flex-col gap-2.5 flex-1" id="called">
+                <p class="text-xs text-outline italic text-center py-4">Memuat data antrian...</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Antrian Menunggu (#wait) -->
+          <div class="lg:col-span-7 flex flex-col">
+            <div class="bg-surface-container-lowest rounded-2xl p-5 shadow-sm h-full flex flex-col border border-outline-variant/20">
+              <div class="flex items-center justify-between mb-4 pb-2 border-b border-surface-container">
+                <div class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-primary text-[20px]">hourglass_top</span>
+                  <h3 class="text-sm font-bold text-on-surface">Antrian Menunggu</h3>
+                </div>
+                <!-- Counter Badge #wc -->
+                <div class="flex items-center gap-2">
+                  <span class="text-xs text-outline">Dalam antrean:</span>
+                  <span class="text-xs bg-primary-container text-on-primary-container px-3 py-0.5 rounded-full font-bold" id="wc">
+                    0 Antrian
+                  </span>
+                </div>
+              </div>
+              <!-- Queue Chips Container #wait -->
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 flex-1" id="wait">
+                <div class="col-span-full text-center py-8 text-xs text-outline">Memuat daftar antrian...</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/api.js"></script>
+  <script src="js/display.js"></script>
+</body>
+</html>
