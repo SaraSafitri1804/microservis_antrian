@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Dashboard Petugas - Posyandu Sehat</title>
+  <link href="https://fonts.googleapis.com" rel="preconnect"/>
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#00685f",
+            "primary-container": "#008378",
+            "on-primary": "#ffffff",
+            "on-primary-container": "#f4fffc",
+            "primary-fixed": "#89f5e7",
+            "primary-fixed-dim": "#6bd8cb",
+            "secondary": "#006c49",
+            "secondary-container": "#6cf8bb",
+            "secondary-fixed": "#6ffbbe",
+            "on-secondary": "#ffffff",
+            "on-secondary-container": "#00714d",
+            "tertiary": "#825100",
+            "tertiary-container": "#a36700",
+            "tertiary-fixed": "#ffddb8",
+            "on-tertiary-fixed": "#2a1700",
+            "error": "#ba1a1a",
+            "error-container": "#ffdad6",
+            "on-error-container": "#93000a",
+            "surface": "#faf8ff",
+            "surface-container": "#eaedff",
+            "surface-container-low": "#f2f3ff",
+            "surface-container-lowest": "#ffffff",
+            "surface-container-high": "#e2e7ff",
+            "on-surface": "#131b2e",
+            "on-surface-variant": "#3d4947",
+            "outline": "#6d7a77",
+            "outline-variant": "#bcc9c6"
+          },
+          fontFamily: {
+            sans: ["Plus Jakarta Sans", "sans-serif"]
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="bg-surface font-sans text-on-surface">
+  <!-- Sidebar Navigation -->
+  <aside class="fixed left-0 top-0 h-full w-72 bg-surface-container-low z-50 flex flex-col pt-6 pb-6 border-r border-surface-container">
+    <div class="px-6 mb-6 flex items-center gap-3">
+      <img alt="Logo Posyandu Sehat" class="h-8 w-auto object-contain" src="assets/logo.png" onerror="this.src='assets/logo.png'"/>
+      <div class="flex flex-col">
+        <span class="text-base font-bold text-primary leading-none">Posyandu Sehat</span>
+        <span class="text-[11px] text-secondary font-bold mt-1">Meja Pelayanan Kader</span>
+      </div>
+    </div>
+    <nav class="flex-1 px-4 flex flex-col gap-1.5">
+      <div class="px-3 py-1 text-[11px] text-outline uppercase tracking-wider font-bold">Pelayanan Loket</div>
+      <a aria-current="page" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all bg-primary-container text-on-primary-container shadow-xs" data-path="dashboard-petugas" href="petugas.html">
+        <span class="material-symbols-outlined text-[20px]">volume_up</span>
+        <span>Panggilan Antrian</span>
+      </a>
+      <a class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="data-pasien" href="pasien.html">
+        <span class="material-symbols-outlined text-[20px]">person_search</span>
+        <span>Pencarian Data Pasien</span>
+      </a>
+
+      <div class="px-3 pt-5 pb-1 text-[11px] text-outline uppercase tracking-wider font-bold">Layar Monitor</div>
+      <a class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" target="_blank" href="display.html">
+        <span class="material-symbols-outlined text-[20px] text-outline">tv</span>
+        <span>Pantau Layar TV Antrian</span>
+        <span class="material-symbols-outlined text-[16px] text-outline ml-auto">open_in_new</span>
+      </a>
+    </nav>
+    <div class="px-4">
+      <div class="bg-surface-container-lowest p-3.5 rounded-2xl flex items-center justify-between shadow-xs border border-outline-variant/20">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-full bg-primary flex items-center justify-center text-white">
+            <span class="material-symbols-outlined text-[20px]">person</span>
+          </div>
+          <div class="flex flex-col">
+            <span class="text-xs font-bold text-on-surface user-display-name">Kader Posyandu</span>
+            <span class="text-[11px] text-secondary font-medium">Online</span>
+          </div>
+        </div>
+        <button class="text-on-surface-variant hover:text-error transition-colors p-1.5 rounded-lg btn-logout" data-action="logout" title="Keluar">
+          <span class="material-symbols-outlined text-[20px]">logout</span>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content Layout -->
+  <div class="pl-72">
+    <!-- Top Bar -->
+    <header class="fixed top-0 left-72 right-0 h-16 bg-surface/90 backdrop-blur-xl shadow-xs border-b border-surface-container z-40 flex items-center justify-between px-8">
+      <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined text-primary text-[22px]">local_hospital</span>
+        <span class="text-sm font-bold text-on-surface">Posyandu Desa Sukamaju • Meja Layanan</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="hidden md:flex items-center gap-2 bg-surface-container px-3.5 py-1.5 rounded-full">
+          <span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+          <span class="text-xs font-medium text-on-surface-variant">Sistem Sinkron Realtime</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="relative pt-16 bg-surface min-h-screen">
+      <div class="px-6 lg:px-10 py-6 max-w-[1400px] w-full mx-auto space-y-6">
+        <!-- Flash Notification #msg -->
+        <div class="hidden transition-all duration-300 rounded-2xl p-4 flex items-center justify-between shadow-sm bg-error-container text-on-error-container" id="msg">
+          <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-[24px]">info</span>
+            <div class="flex flex-col">
+              <span class="text-xs font-bold" id="msgTitle">Status Sistem</span>
+              <span class="text-xs" id="msg-text">Pemberitahuan operasional.</span>
+            </div>
+          </div>
+          <button class="p-1 rounded-lg hover:bg-black/5 transition-colors" onclick="hideMsg()">
+            <span class="material-symbols-outlined text-[18px]">close</span>
+          </button>
+        </div>
+
+        <!-- Header Action Ribbon -->
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-surface-container-lowest p-6 rounded-2xl shadow-sm border border-outline-variant/20 relative overflow-hidden">
+          <div class="flex items-center gap-4 z-10">
+            <div class="w-14 h-14 rounded-2xl bg-primary-container text-on-primary-container flex items-center justify-center shadow-sm">
+              <span class="material-symbols-outlined text-[32px]">medical_services</span>
+            </div>
+            <div class="flex flex-col">
+              <div class="flex items-center gap-2">
+                <span class="text-xs text-primary uppercase tracking-widest font-bold">Klinik Operasional</span>
+                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-secondary-container text-on-secondary-container">
+                  <span class="w-1.5 h-1.5 rounded-full bg-secondary mr-1 animate-ping"></span> Live Station
+                </span>
+              </div>
+              <h1 class="text-xl sm:text-2xl font-extrabold text-on-surface">Pusat Panggilan &amp; Layanan Pasien</h1>
+              <p class="text-xs text-outline">Kelola giliran pemeriksaan balita, ibu hamil, imunisasi, dan konseling gizi</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-3 z-10 flex-wrap sm:flex-nowrap">
+            <!-- Call Next Patient Button -->
+            <button class="px-5 py-3 rounded-xl bg-gradient-to-r from-primary to-primary-container hover:from-primary-container hover:to-secondary text-on-primary text-xs font-bold flex items-center gap-2 shadow-md hover:shadow-lg transition-all active:scale-95 cursor-pointer" id="btnCallNext">
+              <span class="material-symbols-outlined text-[20px]">volume_up</span>
+              <span>Panggil Antrian Berikutnya</span>
+            </button>
+            <button class="p-3 rounded-xl bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors cursor-pointer" onclick="load()" title="Muat Ulang Data">
+              <span class="material-symbols-outlined text-[20px]">refresh</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Quick 4-Metric Statistics Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="metricStats">
+          <!-- Card 1: Total Pasien -->
+          <div class="bg-surface-container-lowest p-5 rounded-2xl shadow-sm flex flex-col justify-between border border-outline-variant/20 hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between">
+              <div class="flex flex-col">
+                <span class="text-xs text-outline font-semibold">Total Pasien Hari Ini</span>
+                <span class="text-3xl font-extrabold text-on-surface mt-1" id="metricTotal">0</span>
+              </div>
+              <div class="w-12 h-12 rounded-xl bg-surface-container flex items-center justify-center text-primary">
+                <span class="material-symbols-outlined text-[26px]">groups</span>
+              </div>
+            </div>
+            <div class="mt-4 pt-2 border-t border-surface-container flex items-center justify-between text-xs text-outline">
+              <span>Seluruh Layanan</span>
+              <span class="text-secondary font-semibold">Hari Ini</span>
+            </div>
+          </div>
+          <!-- Card 2: Menunggu -->
+          <div class="bg-surface-container-lowest p-5 rounded-2xl shadow-sm flex flex-col justify-between border border-outline-variant/20 hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between">
+              <div class="flex flex-col">
+                <span class="text-xs text-tertiary font-semibold">Antrian Menunggu</span>
+                <span class="text-3xl font-extrabold text-tertiary-container mt-1" id="metricWaiting">0</span>
+              </div>
+              <div class="w-12 h-12 rounded-xl bg-tertiary-fixed flex items-center justify-center text-on-tertiary-fixed">
+                <span class="material-symbols-outlined text-[26px]">schedule</span>
+              </div>
+            </div>
+            <div class="mt-4 pt-2 border-t border-surface-container flex items-center justify-between text-xs text-outline">
+              <span>Dalam Ruang Tunggu</span>
+              <span class="text-amber-700 font-semibold">Antre</span>
+            </div>
+          </div>
+          <!-- Card 3: Sedang Diperiksa -->
+          <div class="bg-surface-container-lowest p-5 rounded-2xl shadow-sm flex flex-col justify-between border border-outline-variant/20 hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between">
+              <div class="flex flex-col">
+                <span class="text-xs text-primary font-semibold">Sedang Diperiksa</span>
+                <span class="text-3xl font-extrabold text-primary mt-1" id="metricActive">0</span>
+              </div>
+              <div class="w-12 h-12 rounded-xl bg-primary-fixed flex items-center justify-center text-primary">
+                <span class="material-symbols-outlined text-[26px] animate-pulse">stethoscope</span>
+              </div>
+            </div>
+            <div class="mt-4 pt-2 border-t border-surface-container flex items-center justify-between text-xs text-outline">
+              <span>Bilik Pelayanan</span>
+              <span class="text-teal-700 font-semibold">Aktif</span>
+            </div>
+          </div>
+          <!-- Card 4: Selesai Diperiksa -->
+          <div class="bg-surface-container-lowest p-5 rounded-2xl shadow-sm flex flex-col justify-between border border-outline-variant/20 hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between">
+              <div class="flex flex-col">
+                <span class="text-xs text-secondary font-semibold">Selesai Diperiksa</span>
+                <span class="text-3xl font-extrabold text-secondary mt-1" id="metricDone">0</span>
+              </div>
+              <div class="w-12 h-12 rounded-xl bg-secondary-container flex items-center justify-center text-on-secondary-container">
+                <span class="material-symbols-outlined text-[26px]">task_alt</span>
+              </div>
+            </div>
+            <div class="mt-4 pt-2 border-t border-surface-container flex items-center justify-between text-xs text-outline">
+              <span>Telah Ditangani</span>
+              <span class="text-emerald-700 font-semibold">Selesai</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Per-Service Dispatch Cards #summaryCards -->
+        <div>
+          <h2 class="text-sm font-bold text-on-surface mb-3 flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary text-[18px]">view_timeline</span>
+            Ringkasan Antrian Per Meja Layanan
+          </h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="summaryCards">
+            <div class="p-5 text-xs text-outline italic">Memuat ringkasan layanan...</div>
+          </div>
+        </div>
+
+        <!-- Main List Card Container #listCard -->
+        <div class="bg-surface-container-lowest rounded-2xl shadow-sm overflow-hidden flex flex-col border border-outline-variant/20" id="listCard">
+          <!-- Filter Control Row -->
+          <div class="p-5 bg-surface-container-low flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 border-b border-surface-container">
+            <div class="flex flex-wrap items-center gap-3 flex-1">
+              <!-- Filter Layanan #fl -->
+              <div class="flex items-center gap-2 bg-surface-container-lowest px-3.5 py-2 rounded-xl shadow-xs border border-outline-variant/20 flex-1 sm:flex-initial min-w-[200px]">
+                <span class="material-symbols-outlined text-[18px] text-outline">medical_information</span>
+                <select class="bg-transparent text-xs font-semibold text-on-surface focus:outline-none w-full cursor-pointer" id="fl">
+                  <option value="">Semua Layanan</option>
+                </select>
+              </div>
+              <!-- Filter Status #fs -->
+              <div class="flex items-center gap-2 bg-surface-container-lowest px-3.5 py-2 rounded-xl shadow-xs border border-outline-variant/20 flex-1 sm:flex-initial min-w-[170px]">
+                <span class="material-symbols-outlined text-[18px] text-outline">tune</span>
+                <select class="bg-transparent text-xs font-semibold text-on-surface focus:outline-none w-full cursor-pointer" id="fs">
+                  <option value="">Semua Status</option>
+                  <option value="menunggu">Menunggu</option>
+                  <option value="dipanggil">Dipanggil</option>
+                  <option value="selesai">Selesai</option>
+                  <option value="batal">Batal</option>
+                </select>
+              </div>
+              <!-- Search Input -->
+              <div class="flex items-center gap-2 bg-surface-container-lowest px-4 py-2 rounded-full shadow-xs border border-outline-variant/20 flex-1 max-w-md">
+                <span class="material-symbols-outlined text-[18px] text-outline">search</span>
+                <input class="bg-transparent text-xs text-on-surface focus:outline-none w-full placeholder:text-outline" id="patientSearch" placeholder="Cari nama pasien, tiket, atau NIK..." type="text"/>
+                <button class="text-outline hover:text-on-surface" onclick="clearSearch()">
+                  <span class="material-symbols-outlined text-[16px]">cancel</span>
+                </button>
+              </div>
+            </div>
+            <!-- Record Count -->
+            <div class="flex items-center gap-2 text-xs text-on-surface-variant font-semibold">
+              <span class="px-3 py-1 rounded-full bg-surface-container" id="tableRecordCount">Menampilkan 0 Antrian</span>
+            </div>
+          </div>
+
+          <!-- Table Wrapper #tw -->
+          <div class="overflow-x-auto w-full" id="tw">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-surface-container-high/40 text-xs text-outline uppercase tracking-wider font-semibold border-b border-surface-container">
+                  <th class="py-3 px-4">Nomor Tiket</th>
+                  <th class="py-3 px-4">Nama Pasien &amp; Profil</th>
+                  <th class="py-3 px-4">Jenis Layanan</th>
+                  <th class="py-3 px-4">Kedatangan</th>
+                  <th class="py-3 px-4 text-center">Status</th>
+                  <th class="py-3 px-4 text-right">Aksi Interaktif</th>
+                </tr>
+              </thead>
+              <tbody class="text-xs divide-y divide-surface-container" id="rows">
+                <tr>
+                  <td colspan="6" class="text-center py-10 text-outline text-xs">Memuat antrian...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/petugas.js"></script>
+</body>
+</html>

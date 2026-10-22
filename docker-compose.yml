@@ -1,0 +1,63 @@
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - gateway
+
+  gateway:
+    build: ./backend/gateway
+    ports:
+      - "8080:8000"
+    environment:
+      JWT_SECRET: ${JWT_SECRET}
+      AUTH_URL: http://auth-service:8000
+      ANTRIAN_URL: http://antrian-service:8000
+      PASIEN_URL: http://pasien-service:8000
+    depends_on:
+      - auth-service
+      - antrian-service
+      - pasien-service
+
+  auth-service:
+    build: ./backend/auth-service
+    expose:
+      - "8000"
+    environment:
+      JWT_SECRET: ${JWT_SECRET}
+      DATABASE_URL: sqlite:////data/auth.db
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      PETUGAS_EMAIL: ${PETUGAS_EMAIL}
+      PETUGAS_PASSWORD: ${PETUGAS_PASSWORD}
+    volumes:
+      - auth_data:/data
+
+  antrian-service:
+    build: ./backend/antrian-service
+    expose:
+      - "8000"
+    environment:
+      DATABASE_URL: sqlite:////data/antrian.db
+      PASIEN_URL: http://pasien-service:8000
+      INTERNAL_KEY: ${INTERNAL_KEY}
+    volumes:
+      - antrian_data:/data
+    depends_on:
+      - pasien-service
+
+  pasien-service:
+    build: ./backend/pasien-service
+    expose:
+      - "8000"
+    environment:
+      DATABASE_URL: sqlite:////data/pasien.db
+      INTERNAL_KEY: ${INTERNAL_KEY}
+    volumes:
+      - pasien_data:/data
+
+volumes:
+  auth_data:
+  antrian_data:
+  pasien_data:

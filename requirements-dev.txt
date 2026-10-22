@@ -1,0 +1,9 @@
+# untuk menjalankan tes: pip install -r requirements-dev.txt
+pytest
+httpx
+fastapi
+uvicorn[standard]
+sqlalchemy
+pyjwt
+bcrypt
+tzdata
