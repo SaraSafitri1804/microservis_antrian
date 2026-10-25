@@ -20,44 +20,62 @@ services:
       - antrian-service
       - pasien-service
 
+  # Database PostgreSQL (1 container, isinya 3 database: auth_db, antrian_db, pasien_db)
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres123}
+    ports:
+      - "5433:5432"   # 5433 di laptop (untuk DBeaver), supaya tidak bentrok dengan Postgres lokal
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./db-init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
   auth-service:
     build: ./backend/auth-service
     expose:
       - "8000"
     environment:
       JWT_SECRET: ${JWT_SECRET}
-      DATABASE_URL: sqlite:////data/auth.db
+      DATABASE_URL: postgresql+psycopg2://postgres:${POSTGRES_PASSWORD:-postgres123}@db:5432/auth_db
       ADMIN_EMAIL: ${ADMIN_EMAIL}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD}
       PETUGAS_EMAIL: ${PETUGAS_EMAIL}
       PETUGAS_PASSWORD: ${PETUGAS_PASSWORD}
-    volumes:
-      - auth_data:/data
+    depends_on:
+      db:
+        condition: service_healthy
 
   antrian-service:
     build: ./backend/antrian-service
     expose:
       - "8000"
     environment:
-      DATABASE_URL: sqlite:////data/antrian.db
+      DATABASE_URL: postgresql+psycopg2://postgres:${POSTGRES_PASSWORD:-postgres123}@db:5432/antrian_db
       PASIEN_URL: http://pasien-service:8000
       INTERNAL_KEY: ${INTERNAL_KEY}
-    volumes:
-      - antrian_data:/data
     depends_on:
-      - pasien-service
+      db:
+        condition: service_healthy
+      pasien-service:
+        condition: service_started
 
   pasien-service:
     build: ./backend/pasien-service
     expose:
       - "8000"
     environment:
-      DATABASE_URL: sqlite:////data/pasien.db
+      DATABASE_URL: postgresql+psycopg2://postgres:${POSTGRES_PASSWORD:-postgres123}@db:5432/pasien_db
       INTERNAL_KEY: ${INTERNAL_KEY}
-    volumes:
-      - pasien_data:/data
+    depends_on:
+      db:
+        condition: service_healthy
 
 volumes:
-  auth_data:
-  antrian_data:
-  pasien_data:
+  pg_data:

@@ -1,0 +1,3 @@
+CREATE DATABASE auth_db;
+CREATE DATABASE antrian_db;
+CREATE DATABASE pasien_db;
